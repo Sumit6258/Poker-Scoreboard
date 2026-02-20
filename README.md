@@ -11,9 +11,9 @@ A fully offline, mobile-first **Poker Chip & Score Manager** built as a single `
 
 ## 🎮 Live Demo
 
-> **[▶ Play it live on GitHub Pages](https://YOUR-USERNAME.github.io/poker-scoreboard/)**
+> **[▶ Play it live on GitHub Pages](https://sumit6258.github.io/Poker-Scoreboard/)**
 >
-> *(Replace `YOUR-USERNAME` with your actual GitHub username after deployment)*
+
 
 ---
 
