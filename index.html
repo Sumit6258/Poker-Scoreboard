@@ -53,7 +53,7 @@ input,select,textarea,button{font-family:inherit}
 .page{display:none;flex-direction:column;position:relative;z-index:1;animation:pFade .3s ease}
 .page.active{display:flex}
 @keyframes pFade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.wrap{max-width:900px;margin:0 auto;padding:14px 12px;width:100%}
+.wrap{max-width:900px;margin:0 auto;padding:14px 12px;width:100%;padding-bottom:calc(var(--nav) + 80px);}
 
 /* ─── HEADER ─────────────────────────────────────── */
 .hdr{
@@ -563,6 +563,17 @@ tbody tr:last-child td{border-bottom:none}
 .fab-hand:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(124,58,237,.6)}
 .fab-rules{background:linear-gradient(135deg,#0f766e,#0d9488);box-shadow:0 5px 20px rgba(13,148,136,.4)}
 .fab-rules:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(13,148,136,.6)}
+
+@media(max-width:640px){
+  #lb-box{
+    margin-bottom:140px;
+  }
+
+  /* Hide floating buttons while Rankings are visible */
+  #lb-box:not([style*="display:none"]) ~ #fab-grp{
+    display:none;
+  }
+}
 
 /* ─── TOAST ──────────────────────────────────────── */
 .toast-wrap{position:fixed;top:14px;right:14px;z-index:800;
