@@ -1,6 +1,6 @@
-# ♠ Poker Scoreboard & Ranking System
+#  ♠ Card Scoreboard Pro v2
 
-A fully offline, mobile-first **Poker Chip & Score Manager** built as a single `index.html` file — no frameworks, no CDN, no build step required.
+A fully-featured, mobile-first card game scoreboard that runs entirely in a single HTML file — no installs, no dependencies, no server. Open it in any browser and play.
 
 ![Poker Scoreboard](https://img.shields.io/badge/HTML-Single%20File-orange?style=flat-square&logo=html5)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
@@ -17,184 +17,224 @@ A fully offline, mobile-first **Poker Chip & Score Manager** built as a single `
 
 ---
 
-## 📸 Features at a Glance
+## What It Does
 
-| Feature | Description |
+Track multi-player card games across a configured number of rounds. Poker mode has full betting logic (Call, Raise, MAX All-In, Fold) with a per-round chip budget system. Four other games use manual score entry per round. Every round is logged, profit/loss is tracked per player, and a Final Results screen shows the complete match breakdown when the last round ends.
+
+---
+
+## Getting Started
+
+1. Open `index.html` in any modern browser
+2. Select your game mode from the top bar
+3. Click **⚙️ Lock In Match** — enter starting chips and total rounds
+4. Add 2–6 players
+5. Hit **▶ Start Round** and play
+
+---
+
+## Match Configuration
+
+Before any round can begin, you set two values:
+
+| Field | Description |
 |---|---|
-| 👥 **Player Management** | Add up to 6 players with custom chip counts |
-| 📞 **Call / 📈 Raise / 🏳️ Fold** | Core poker actions with full chip math |
-| 🪙 **Live Pot Tracker** | Animated pot display updates on every action |
-| 🏆 **Rankings Board** | Auto-sorted leaderboard by score then chips |
-| 🃏 **Hand Rankings Panel** | Visual playing card reference for all 10 hands |
-| 📖 **Game Rules** | In-app rules guide — great for beginners |
-| 🎰 **Round Counter** | Tracks how many rounds have been played |
-| 📱 **Mobile-First** | Designed for phones — pass around the table! |
-| ✨ **Micro-animations** | Card pulses, pot bumps, winner glow, ripples |
-| 🌙 **Dark Casino Theme** | Premium glassmorphism dark UI |
+| **Starting Chips** | How many chips each player begins with (min 100) |
+| **Total Rounds** | How many rounds the match will last (min 1) |
 
----
+From these two numbers, the app calculates:
 
-## 🚀 Getting Started
-
-### Option 1 — Open Directly (Zero Setup)
-
-```bash
-# Clone the repo
-git clone https://github.com/YOUR-USERNAME/poker-scoreboard.git
-
-# Open the file in any browser
-open index.html
+```
+Max Bet Per Round = Starting Chips ÷ Total Rounds
 ```
 
-No server needed. No `npm install`. Just open the file.
+**Example:** 1000 chips, 10 rounds → each player can bet at most **100 chips per round**. This budget resets every round regardless of wins or losses. A live preview shows the max-per-round calculation as you type.
 
 ---
 
-### Option 2 — Host on GitHub Pages
+## Poker Mode — Betting Actions
 
-1. **Fork or push** this repo to your GitHub account
-2. Go to your repo → **Settings** → **Pages**
-3. Under *Branch*, select `main` (or `master`) and folder `/root`
-4. Click **Save**
-5. Wait ~60 seconds, then visit:
-   ```
-   https://YOUR-USERNAME.github.io/poker-scoreboard/
-   ```
+### Call
+Match the current highest bet. The difference between the highest bet and your current bet is deducted from your chips and added to the pot. If you cannot cover the full amount within your round budget, you go all-in for whatever you have left.
 
-That's it — live on the internet for free! ✅
+### Raise
+Set a new highest bet. Enter an amount in the raise field — the new highest bet becomes `current highest + your raise`. All other players must at least call this new amount. Raises are capped by your remaining round budget.
+
+### MAX (All-In)
+Bet your **entire remaining round budget** in one action.
+
+- If you've already bet 10 out of your 100-chip budget, MAX puts in the remaining 90
+- Once **any** player uses MAX, the round enters MAX mode: every other active player must either **MAX** or **Fold** — no partial bets or raises allowed
+- The MAX button pulses red; a red banner appears across the player grid when MAX mode is active
+
+**Example with 4 players, 1000 chips, 10 rounds (100 max/round):**
+- Player A raises by 10 → 90 budget remaining
+- Player A then MAXes → remaining 90 go into pot → Player A is all-in
+- Players B, C, D now see only MAX or Fold
+
+### Fold
+Surrender your hand. Chips already in the pot are forfeited. You automatically re-enter next round. A confirmation prompt appears before the fold is registered (can be disabled in Settings).
 
 ---
 
-## 🃏 How to Play
+## Round Flow
 
-### Setup
-1. Enter player names and chip amounts, click **＋ Add Player** (up to 6 players)
-2. Click **▶ Start Round** to begin a hand
+```
+Configure Match → Add Players → Start Round → Players Act → Award Pot → Next Round
+```
 
-### Each Player's Turn
-| Action | What Happens |
+1. **Start Round** — snapshots each player's chip count for P/L accounting, resets bets and budgets, re-activates folded players
+2. **Players act** — Call, Raise, MAX, or Fold in any order
+3. **Award Pot** — select the winner from the dropdown and click Award
+4. **Repeat** until the final round completes, then Final Results opens automatically
+
+If all but one player folds, the pot is auto-awarded to the last standing player after a 2-second delay.
+
+---
+
+## Profit / Loss Accounting
+
+Every round, the app records each player's chip count before and after:
+
+```
+Delta = End Chips − Start Chips
+```
+
+- Positive delta → added to Total Won
+- Negative delta → added to Total Lost
+- Net P/L = Total Won − Total Lost
+
+This is shown live on every player card, in the Rankings table, on the Analytics page, and in Final Results.
+
+---
+
+## Leaderboard
+
+The Rankings table shows a full per-player breakdown:
+
+| Column | Description |
 |---|---|
-| **Call** | Matches the current highest bet; chips deducted, pot increased |
-| **Raise** | Enter an amount → new bet = highest bet + raise; becomes new high |
-| **Fold** | Player sits out until next round; their pot contribution is lost |
+| Chips | Current chip count |
+| Wins | Number of rounds won |
+| Won Rounds | Which round numbers they won |
+| Losses | Number of rounds lost |
+| Lost Rounds | Which round numbers they lost |
+| Folds | Total times folded |
+| Folded Rounds | Which round numbers they folded |
+| +Won | Total chips gained across all rounds |
+| −Lost | Total chips lost across all rounds |
+| Net P/L | Won minus Lost |
 
-### Ending a Round
-- Select the winner from the dropdown and click **🏆 Award Pot**
-- Winner's chips increase by the pot total
-- Winner's **Score** increases by the same amount (score never decreases)
-- Rankings update automatically
-
-### Scoring
-- **Chips** = current wallet (fluctuates each round)
-- **Score** = lifetime total of all pots won (only goes up)
-- Leaderboard sorts by Score → Chips as tiebreaker
+Sorted by Net P/L by default. Switch between **Session** and **All Time** views.
 
 ---
 
-## 📁 File Structure
+## Final Results
 
-```
-poker-scoreboard/
-├── index.html      ← Entire app (HTML + CSS + JS, single file)
-└── README.md       ← This file
-```
+After the last round, the Final Results screen shows automatically:
 
-Everything is embedded in `index.html`:
-- ✅ All CSS (including animations, glassmorphism, responsive grid)
-- ✅ All JavaScript (game logic, state management, rendering)
-- ✅ Hand rankings data (all 10 hands with real card examples)
-- ✅ Game rules content
-- ✅ Toast notifications
-- ✅ Ripple effects
+- **Champion card** — top player by net profit, with final chips, rounds won, and net P/L
+- **Full standings table** — every player with all stats including which rounds they won, lost, and folded
+- **Highlights** — Champion, Biggest Loser, Most Folds, Biggest Single Pot
+- **Match summary** — total rounds, game mode, max per round
+
+From here you can **Play Again** (same players, chips reset) or **New Match** (full reset).
 
 ---
 
-## 🎨 UI Highlights
+## Other Game Modes
 
-- **Glassmorphism cards** with `backdrop-filter: blur`
-- **Premium gradient buttons** — Call (blue), Raise (gold), Fold (red), Start (green)
-- **Ripple click feedback** on all buttons
-- **Animated pot counter** bumps on every chip movement
-- **Gold glow pulse** on the current highest bettor's card
-- **Winner flash animation** after awarding the pot
-- **Collapsible leaderboard** for mobile screen space
-- **Two floating action buttons** — Hand Rankings 🃏 and Game Rules 📖
-- **Bottom sheet modals** with spring easing animation
+Rummy, Spades, Teen Patti, and Bridge use manual score entry. Each round, enter each player's score and click **Submit Round Scores**. The same P/L accounting, leaderboard, history, and analytics apply.
 
 ---
 
-## 🧠 Technical Notes
+## Pages
 
-### State Management
-```js
-// Core state
-let players    = [];   // Array of player objects
-let pot        = 0;    // Current round pot
-let highestBet = 0;    // Highest bet this round
-let roundNumber= 0;    // Round counter
-
-// Player object shape
-{
-  id,          // Unique auto-increment ID
-  name,        // Display name
-  chips,       // Current chip count
-  currentBet,  // Bet placed this round
-  score,       // Cumulative lifetime score
-  folded       // Boolean — folded this round?
-}
-```
-
-### Key Functions
-| Function | Purpose |
+| Page | Contents |
 |---|---|
-| `addPlayer()` | Validate + push new player |
-| `startRound()` | Reset bets, re-activate players, increment round |
-| `callPlayer(id)` | Match highest bet; handle all-in edge case |
-| `raisePlayer(id)` | Raise above highest bet; update `highestBet` |
-| `foldPlayer(id)` | Mark player folded |
-| `endRound()` | Award pot to winner; update score |
-| `renderPlayers()` | Re-render all player cards to DOM |
-| `updateLeaderboard()` | Sort + re-render rankings table |
+| 🃏 Game | Play screen — game selector, config, player cards, rankings |
+| 📜 History | Round-by-round log with chip deltas, export/clear |
+| 📊 Stats | Bar charts, P/L breakdown table, highlights, session stats |
+| ⚙️ Settings | Theme, preferences, match reconfiguration, data management |
 
-### Bet Formula
-```
-callAmount  = highestBet - player.currentBet
-newBet      = highestBet + raiseAmount
-chipsNeeded = newBet - player.currentBet
-pot        += chipsNeeded
-```
+The **📖 Rules** and **🃏 Hands** buttons float above the nav bar on every page.
 
 ---
 
-## 📱 Browser Support
+## Player Profiles
 
-Works in all modern browsers:
+Tap any player avatar to open their profile:
 
-| Browser | Support |
+- Full stat grid: chips, wins, losses, win rate, folds, net P/L, total won, total lost, biggest pot
+- Which specific rounds they won, lost, and folded
+- Achievement badges (locked/unlocked)
+- Option to reset that player's stats
+
+---
+
+## Achievements
+
+| Badge | Unlock Condition |
 |---|---|
-| Chrome / Edge | ✅ Full |
-| Firefox | ✅ Full |
-| Safari (iOS) | ✅ Full |
-| Samsung Internet | ✅ Full |
+| 🥇 First Win | Win your first round |
+| 🔥 On Fire | Win 3 rounds in a row |
+| 🌋 Unstoppable | Win 5 rounds in a row |
+| 💰 5K Club | Accumulate 5,000+ chips |
+| 📈 Aggressor | Raise 5+ times in a session |
+| 🔥 All-In King | Use MAX 3+ times |
+| 🛡️ Survivor | Win a round without having ever folded |
+| 🎯 Big Pot | Win a pot of 500+ chips |
 
 ---
 
-## 🔧 Customisation
+## Settings
 
-Want to tweak the defaults? Edit these values in `index.html`:
-
-```js
-// Default chip count shown in the input
-<input ... value="1000" ...>
-
-// Maximum players
-if (players.length >= 6) { ... }
-
-// Toast display duration (ms)
-}, 2800);
-```
+| Setting | Default | Description |
+|---|---|---|
+| Theme | Dark Poker | Dark Poker / Neon Casino / Light |
+| Sound Effects | On | Web Audio tones for chip, raise, fold, win |
+| Confirm Before Fold | On | Prompt before registering a fold |
+| Winner Celebration | On | Confetti animation on round win |
+| Highlight Active Player | On | Green border on current turn |
 
 ---
+
+## Undo
+
+The **↩ Undo** button reverts the last action, including MAX triggered state. Up to 15 steps per round. Resets between rounds.
+
+---
+
+## Data Persistence
+
+All state saves automatically to `localStorage` after every action. Refreshing or closing the browser restores the full match exactly as it was. Export the full session as a `.json` file at any time from the History page or Settings.
+
+---
+
+## Edge Cases
+
+- **Bankrupt player** (0 chips) — auto-sits out; re-enters when chips are restored
+- **All but one folds** — pot auto-awarded after 2 seconds
+- **Call with insufficient budget** — player goes all-in for whatever they can afford
+- **MAX with 0 remaining budget** — button disabled
+- **Remove player during round** — blocked with error
+- **Duplicate player names** — rejected on add
+- **MAX triggered** — Call and Raise disabled; only MAX and Fold shown
+- **Match complete** — all betting locked; Final Results re-openable
+
+---
+
+## Technical
+
+| Property | Value |
+|---|---|
+| File count | 1 (single `index.html`) |
+| Dependencies | None |
+| Frameworks | None — vanilla JS, CSS, HTML |
+| Storage | `localStorage` (key: `cgsb_v4`) |
+| Browser support | Any modern browser |
+| File size | ~115 KB |
+| Lines | ~2,450 |
 
 ## 📄 License
 
